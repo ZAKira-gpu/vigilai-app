@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "354457202637",
+    "project_id": "vigilai-12b43",
+    "storage_bucket": "vigilai-12b43.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:354457202637:android:920c9968e43b5d56f99e84",
+        "android_client_info": {
+          "package_name": "com.example.new_vigilai"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "354457202637-k4l8hpsq3hjrc44arbvg6c7ldro739eq.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCA2uoShaklCNgThFGM-4sptf2SZ238C4I"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "354457202637-k4l8hpsq3hjrc44arbvg6c7ldro739eq.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "354457202637-n3au2qppm1appm9rphq72gj5djrf5ape.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.newVigilai"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
