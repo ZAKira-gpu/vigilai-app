@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
-import 'package:new_vigilai/pages/home_page/pages/about_page.dart';
+import 'package:new_vigilai/pages/home_page/pages/devices_page.dart';
 import 'package:new_vigilai/pages/home_page/pages/alerts_page.dart';
 import 'package:new_vigilai/pages/home_page/pages/bottom_nav_bar.dart';
 import 'package:new_vigilai/pages/home_page/pages/cloud_page.dart';
 import 'package:new_vigilai/pages/home_page/pages/dashboard_page.dart';
+import 'package:new_vigilai/pages/home_page/pages/stream_page.dart';
 import 'package:new_vigilai/pages/home_page/pages/user%20profile_page.dart';
 import 'package:new_vigilai/pages/login_screen.dart';
 import 'package:new_vigilai/pages/signin_page.dart';
@@ -129,9 +130,9 @@ class _homeState extends State<home> {
 //pages to navigate
   final List<Widget> _pages =[
     //dashboard page
-    dashboard(key: ValueKey('dashboard')),
+    Dashboard(key: ValueKey('dashboard')),
     //alerts page
-    alerts(key: ValueKey('alerts')),
+    alertsPage(key: ValueKey('alerts')),
     //cloud page
     cloud(key: ValueKey('cloud')),
 
@@ -207,25 +208,25 @@ class _homeState extends State<home> {
                     Divider(color: Colors.grey.shade300, thickness: 1),
                     const SizedBox(height: 20),
                     _modernDrawerItem(
-                      icon: Icons.home,
-                      text: "Home",
+                      icon: Icons.cast_connected,
+                      text: "Add Device",
                       onTap: () {
                         Navigator.pop(context);
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => about()),
+                          MaterialPageRoute(builder: (context) => DevicesPage()),
                         );
                       },
                     ),
                     const SizedBox(height: 12),
                     _modernDrawerItem(
-                      icon: Icons.info_outline,
-                      text: "About",
+                      icon: Icons.stream,
+                      text: "Stream",
                       onTap: () {
                         Navigator.pop(context);
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => about()),
+                          MaterialPageRoute(builder: (context) => StreamPage()),
                         );
                       },
                     ),

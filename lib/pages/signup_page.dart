@@ -3,6 +3,8 @@ import 'package:lottie/lottie.dart';
 import 'package:new_vigilai/pages/home_page/home_page.dart';
 import 'package:new_vigilai/pages/signin_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:intl_phone_field/intl_phone_field.dart';
+
 
 import '../firebase_auth/firebase_auth.dart'; // make sure your signup function is here
 
@@ -19,18 +21,29 @@ class _SignUpPageState extends State<SignUpPage> {
   final confirmPasswordController = TextEditingController();
   final FocusNode _passwordFocusNode = FocusNode();
   final FocusNode _confirmPasswordFocusNode = FocusNode();
+  final phoneController = TextEditingController();
+  final FocusNode _emailFocusNode = FocusNode();
+
+
+
 
   bool isLoading = false;
   bool isPasswordVisible = false;
   bool isConfirmPasswordVisible = false;
+  bool isValidPhoneNumber(String phone) {
+    final phoneRegex = RegExp(r'^\+?\d{9,15}$'); // allows +1234567890 (9 to 15 digits)
+    return phoneRegex.hasMatch(phone);
+  }
 
   @override
   void dispose() {
     emailController.dispose();
     passwordController.dispose();
     confirmPasswordController.dispose();
+    _emailFocusNode.dispose();
     _passwordFocusNode.dispose();
     _confirmPasswordFocusNode.dispose();
+    phoneController.dispose();
     super.dispose();
   }
 
@@ -38,10 +51,18 @@ class _SignUpPageState extends State<SignUpPage> {
     final email = emailController.text.trim();
     final password = passwordController.text.trim();
     final confirmPassword = confirmPasswordController.text.trim();
+    final phone = phoneController.text.trim();
 
-    if (email.isEmpty || password.isEmpty || confirmPassword.isEmpty) {
+    if (email.isEmpty || password.isEmpty || confirmPassword.isEmpty || phone.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Please fill in all fields")),
+      );
+      return;
+    }
+
+    if (phone.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Please enter your phone number")),
       );
       return;
     }
@@ -55,7 +76,7 @@ class _SignUpPageState extends State<SignUpPage> {
 
     setState(() => isLoading = true);
 
-    bool signupSuccess = await signup(context, email, password); // your signup logic
+    bool signupSuccess = await signup(context, email, password, phone);
 
     setState(() => isLoading = false);
 
@@ -68,15 +89,35 @@ class _SignUpPageState extends State<SignUpPage> {
     }
   }
 
+
   Future<void> _onSignUpSuccess(BuildContext context) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setBool('isLoggedIn', true);
+    await prefs.setBool('isLoggedIn', false); // Don't auto-login after signup
 
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (_) => home()),
+    // Show dialog to notify user
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: const Text("Verify Your Email"),
+        content: const Text(
+          "We've sent a verification link to your email. Please verify it before signing in.",
+        ),
+        actions: [
+          TextButton(
+            child: const Text("OK"),
+            onPressed: () {
+              Navigator.of(context).pop(); // Close the dialog
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (_) => const SignInPage()),
+              );
+            },
+          ),
+        ],
+      ),
     );
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -90,7 +131,7 @@ class _SignUpPageState extends State<SignUpPage> {
             child: Column(
               children: [
                 Expanded(
-                  flex: 4,
+                  flex: 3,
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -114,7 +155,7 @@ class _SignUpPageState extends State<SignUpPage> {
                 Expanded(
                   flex: 6,
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
                     decoration: const BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
@@ -144,13 +185,34 @@ class _SignUpPageState extends State<SignUpPage> {
                           icon: Icons.email_outlined,
                           onSubmitted: (_) => _passwordFocusNode.requestFocus(),
                         ),
-                        const SizedBox(height: 16),
+                        const SizedBox(height: 12),
+                        IntlPhoneField(
+                          controller: phoneController,
+                          decoration: InputDecoration(
+                            labelText: 'Phone Number',
+                            filled: true,
+                            fillColor: const Color(0xFFF7F8FA),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(16),
+                              borderSide: BorderSide.none,
+                            ),
+                          ),
+                          initialCountryCode: 'DZ', // Change to your default country
+                          onChanged: (phone) {
+                            print(phone.completeNumber); // Full number with country code
+                          },
+                          onCountryChanged: (country) {
+                            print('Country changed to: ' + country.name);
+                          },
+                        ),
+
+                        const SizedBox(height: 12),
                         _buildPasswordField(),
-                        const SizedBox(height: 16),
+                        const SizedBox(height: 12),
                         _buildConfirmPasswordField(),
-                        const SizedBox(height: 24),
+                        const SizedBox(height: 12),
                         _buildSignUpButton(context),
-                        const SizedBox(height: 16),
+                        const SizedBox(height: 12),
                         Center(
                           child: TextButton(
                             onPressed: () {
@@ -181,10 +243,14 @@ class _SignUpPageState extends State<SignUpPage> {
     required TextEditingController controller,
     required String hint,
     required IconData icon,
+    FocusNode? focusNode,
+    TextInputAction textInputAction = TextInputAction.next,
     void Function(String)? onSubmitted,
   }) {
     return TextField(
       controller: controller,
+      focusNode: focusNode,
+      textInputAction: textInputAction,
       keyboardType: TextInputType.emailAddress,
       onSubmitted: onSubmitted,
       decoration: InputDecoration(
@@ -201,11 +267,16 @@ class _SignUpPageState extends State<SignUpPage> {
     );
   }
 
+
+
+
   Widget _buildPasswordField() {
     return TextField(
       controller: passwordController,
       focusNode: _passwordFocusNode,
       obscureText: !isPasswordVisible,
+      textInputAction: TextInputAction.next,
+      onSubmitted: (_) => _confirmPasswordFocusNode.requestFocus(),
       decoration: InputDecoration(
         prefixIcon: Icon(Icons.lock_outline, color: Color(0xFF6EA1FF)),
         suffixIcon: IconButton(

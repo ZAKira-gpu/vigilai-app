@@ -1,7 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:new_vigilai/pages/home_page/home_page.dart';
-import 'package:new_vigilai/pages/home_page/pages/about_page.dart';
+
 import 'package:new_vigilai/pages/signin_page.dart';
 import 'package:new_vigilai/pages/signup_page.dart';
 import 'package:new_vigilai/pages/splash_screen.dart';
@@ -27,7 +27,7 @@ class MyApp extends StatelessWidget {
         '/signin': (context) => SignInPage(),
         '/signup': (context) => SignUpPage(),
         '/home': (context) => home(),
-        '/about': (context) => about(),
+
       },
     );
   }

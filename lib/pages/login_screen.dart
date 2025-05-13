@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:new_vigilai/pages/signin_page.dart';
@@ -11,18 +10,18 @@ class LoginPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Color(0xFFF6F6F6)
+      ,
       body: Column(
         children: [
           // Top Half - Lottie Animation
-          Center(
-            child: Expanded(
-              flex: 5,
+          Expanded(
+            flex: 3,
+            child: Center(
               child: Container(
                 width: double.infinity,
                 child: Lottie.asset(
                   'assets/login.json',
-                  // Make sure the file is in assets folder and declared in pubspec.yaml
                   fit: BoxFit.cover,
                 ),
               ),
@@ -63,14 +62,15 @@ class LoginPage extends StatelessWidget {
     );
   }
 
+
   Widget _buildButton(BuildContext context,
       String text,
       Color bgColor,
       Color textColor, {
         bool outlined = false,
       }) {
-     final VoidCallback onPressed = () {
-       if (text == "Sign In") {
+    final VoidCallback onPressed = () {
+      if (text == "Sign In") {
         Navigator.push(
           context,
           MaterialPageRoute(builder: (_) => SignInPage()),
@@ -109,4 +109,4 @@ class LoginPage extends StatelessWidget {
       ),
     );
   }
-}
+}  

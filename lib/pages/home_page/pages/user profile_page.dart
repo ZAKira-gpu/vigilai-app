@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -10,6 +11,8 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
   User? user;
+  String phoneNumber = 'Loading...'; // Default value
+
 
   @override
   void initState() {
@@ -23,7 +26,16 @@ class _ProfilePageState extends State<ProfilePage> {
     setState(() {
       user = FirebaseAuth.instance.currentUser; // Reloaded user
     });
+
+    if (user != null) {
+      // Fetch phone number from Firestore
+      DocumentSnapshot snapshot = await FirebaseFirestore.instance.collection('users').doc(user!.uid).get();
+      setState(() {
+        phoneNumber = snapshot['phone'] ?? 'No Phone Number Set';
+      });
+    }
   }
+
 
   void _showChangePasswordDialog(BuildContext context) {
     final currentPasswordController = TextEditingController();
@@ -125,7 +137,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    "Name: ${user!.displayName != null && user!.displayName!.isNotEmpty ? user!.displayName : 'No Name Set'}",
+                    "Phone Number: $phoneNumber", // Display phone number
                     style: TextStyle(fontSize: 18),
                   ),
                   SizedBox(height: 10),
@@ -137,6 +149,7 @@ class _ProfilePageState extends State<ProfilePage> {
               ),
             ),
           ),
+
           SizedBox(height: 30),
           ElevatedButton(
             onPressed: () => _showChangePasswordDialog(context),
